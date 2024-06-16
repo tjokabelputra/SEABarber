@@ -2,9 +2,10 @@ import HaircutImage from './assets/Haircut.jpg';
 import ManicureImage from './assets/Manicure.jpg'
 import FacialImage from './assets/Facial.jpg';
 import salonImage from './assets/Salon.jpg';
-import ReviewBackground from './assets/ReviewBackground.jpg'
 import { FaStar } from 'react-icons/fa';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { createReview } from './action/review.action';
 
 function App() {
   const stars = Array(5).fill(0);
@@ -13,11 +14,15 @@ function App() {
   const [review, setReview] = useState({
     name: '',
     comment: '',
-    star: '',
+    star: 0,
   });
 
   const handleClick = value => {
-    setCurrValue(value)
+    setCurrValue(value);
+    setReview(prevState => ({
+      ...prevState,
+      star: value
+    }));
   }
 
   const handleMouseHover = value =>{
@@ -37,12 +42,19 @@ function App() {
   };
   
   const handleSubmit = () => {
-    const updatedReview = {
-      ...review,
-      star: currValue.toString()
-    };
-    setReview(updatedReview);
-    console.log(updatedReview);
+    createReview(review)
+    .then(() => {
+      alert('Review Succesfully Added');
+      setReview({
+        name: '',
+        comment: '',
+        star: 0,
+      });
+      setCurrValue(0);
+    })
+    .catch(error => {
+      alert(error);
+    });
   };
 
   return (
@@ -50,9 +62,10 @@ function App() {
       <nav className='flex flex-row justify-around bg-'>
         <h1 className='text-4xl py-4 text-black max-sm:text-2xl'>SEA Salon</h1>
         <ul className='flex flex-row items-center'>
-          <li className='mx-4 text-2xl text-black cursor-pointer max-sm:text-xl max-sm:mx-1'>Home</li>
-          <li className='mx-4 text-2xl text-black cursor-pointer max-sm:text-xl max-sm:mx-1'>Service</li>
-          <li className='mx-4 text-2xl text-black cursor-pointer max-sm:text-xl max-sm:mx-1'>Branch</li>
+          <li className='mx-4 text-2xl text-black cursor-pointer max-sm:text-base max-sm:mx-1'>Home</li>
+          <li className='mx-4 text-2xl text-black cursor-pointer max-sm:text-base max-sm:mx-1'>Service</li>
+          <li className='mx-4 text-2xl text-black cursor-pointer max-sm:text-base max-sm:mx-1'>Branch</li>
+          <li className='mx-4 text-2xl text-black cursor-pointer max-sm:text-base max-sm:mx-1'><Link to="/reserve">Reservation</Link></li>
         </ul>
       </nav>
 
