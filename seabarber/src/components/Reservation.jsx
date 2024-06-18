@@ -1,10 +1,11 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { createReservation } from "./action/reservation.action";
-import Salon from "./assets/Salon.jpg"
+import { useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { createReservation } from "../action/reservation.action";
+import Salon from "../assets/Salon.jpg"
 
 function Reservation() {
     const navigate = useNavigate();
+    const location = useLocation();
     const [reservation, setReservation] = useState({
         name: '',
         phone: '',
@@ -13,6 +14,23 @@ function Reservation() {
         time: '',
         dateandtime: '',
     });
+
+    useEffect(() => {
+        if (location.state) {
+            const { full_name, phone } = location.state; 
+            setReservation(prevReservation => ({
+                ...prevReservation,
+                name: full_name || '', 
+                phone: phone || '',
+            }));
+        }
+    }, [location.state]);
+    
+
+    function handleHome() {
+        const { id, full_name, phone, role } = location.state || {};
+        navigate('/', { state: { id, full_name, phone, role } });
+    }
 
     const handleAddReservation = () => {
         const time = reservation.time;
@@ -42,7 +60,8 @@ function Reservation() {
                 .catch(error => {
                     alert(error);
                 });
-        } else {
+        } 
+        else {
             console.error('Failed to format date and time');
         }
     };
@@ -74,7 +93,7 @@ function Reservation() {
             <nav className='flex flex-row justify-around bg-'>
                 <h1 className='text-4xl py-4 text-black max-sm:text-2xl'>SEA Salon</h1>
                 <ul className='flex flex-row items-center'>
-                    <li className='mx-4 text-2xl text-black cursor-pointer max-sm:text-base max-sm:mx-1'><Link to="/">Home</Link></li>
+                    <li className='mx-4 text-2xl text-black cursor-pointer max-sm:text-base max-sm:mx-1' onClick={handleHome}>Home</li>
                 </ul>
             </nav>
             <main 

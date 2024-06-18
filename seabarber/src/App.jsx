@@ -4,10 +4,12 @@ import FacialImage from './assets/Facial.jpg';
 import salonImage from './assets/Salon.jpg';
 import { FaStar } from 'react-icons/fa';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { createReview } from './action/review.action';
 
 function App() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const stars = Array(5).fill(0);
   const [currValue, setCurrValue] = useState(0);
   const [hovValue, setHovValue] = useState(0);
@@ -16,6 +18,24 @@ function App() {
     comment: '',
     star: 0,
   });
+  const { id, full_name, phone, role } = location.state || {};
+
+  function handleHome(){
+    navigate('/', { state: { id, full_name, phone, role } });
+  }
+
+  function handleReservation(){
+    if(id != null && role == 'Customer'){
+      navigate('/reserve', { state: { id, full_name, phone, role } });
+    }
+    else{
+      navigate('/login')
+    }
+  }
+
+  function handleDashboard(){
+    navigate('/dashboard', { state: { id: id } });
+  }
 
   const handleClick = value => {
     setCurrValue(value);
@@ -63,9 +83,15 @@ function App() {
         <h1 className='text-4xl py-4 text-black max-sm:text-2xl'>SEA Salon</h1>
         <ul className='flex flex-row items-center'>
           <li className='mx-4 text-2xl text-black cursor-pointer max-sm:text-base max-sm:mx-1'>Home</li>
-          <li className='mx-4 text-2xl text-black cursor-pointer max-sm:text-base max-sm:mx-1'>Service</li>
           <li className='mx-4 text-2xl text-black cursor-pointer max-sm:text-base max-sm:mx-1'>Branch</li>
-          <li className='mx-4 text-2xl text-black cursor-pointer max-sm:text-base max-sm:mx-1'><Link to="/reserve">Reservation</Link></li>
+          {role != 'Admin' &&
+          <li className='mx-4 text-2xl text-black cursor-pointer max-sm:text-base max-sm:mx-1' onClick={handleReservation}>Reservation</li>
+          }
+          {id != null ? (
+            <li className='mx-4 text-2xl text-black cursor-pointer max-sm:text-base max-sm:mx-1' onClick={handleDashboard}>{full_name}</li>
+          ) : (
+            <li className='mx-4 text-2xl text-black cursor-pointer max-sm:text-base max-sm:mx-1'><Link to="/login">Login</Link></li>
+          )}
         </ul>
       </nav>
 
