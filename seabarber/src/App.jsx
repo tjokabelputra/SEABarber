@@ -37,6 +37,10 @@ function App() {
     navigate('/dashboard', { state: { id: id } });
   }
 
+  function handleBranchList(){
+    navigate('/branch', {state : { id, full_name, phone, role } });
+  }
+
   const handleClick = value => {
     setCurrValue(value);
     setReview(prevState => ({
@@ -82,8 +86,8 @@ function App() {
       <nav className='flex flex-row justify-around bg-'>
         <h1 className='text-4xl py-4 text-black max-sm:text-2xl'>SEA Salon</h1>
         <ul className='flex flex-row items-center'>
-          <li className='mx-4 text-2xl text-black cursor-pointer max-sm:text-base max-sm:mx-1'>Home</li>
-          <li className='mx-4 text-2xl text-black cursor-pointer max-sm:text-base max-sm:mx-1'>Branch</li>
+          <li className='mx-4 text-2xl text-black cursor-pointer max-sm:text-base max-sm:mx-1' onClick={handleHome}>Home</li>
+          <li className='mx-4 text-2xl text-black cursor-pointer max-sm:text-base max-sm:mx-1' onClick={handleBranchList}>Branch</li>
           {role != 'Admin' &&
           <li className='mx-4 text-2xl text-black cursor-pointer max-sm:text-base max-sm:mx-1' onClick={handleReservation}>Reservation</li>
           }

@@ -1,4 +1,3 @@
-const { error, log } = require("console");
 const pool = require("../db/instance");
 const crypto = require('crypto');
 

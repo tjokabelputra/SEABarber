@@ -21,6 +21,14 @@ function Dashboard() {
         })
     }
 
+    function handleBranchDashboard(){
+        navigate('/branchDashboard', { state: { user_id : id, full_name: accountDetail.full_name } });
+    }
+
+    function handleReserve(){
+        navigate('/reserve', { state: { id, full_name: accountDetail.full_name, phone: accountDetail.phone, role: accountDetail.role } });
+    }
+
     function handleLogOut(){
         const logoutInfo = {full_name:accountDetail.full_name, email:accountDetail.email, phone:accountDetail.phone, password:accountDetail.password}  
         logoutEvent(id, logoutInfo)  
@@ -66,7 +74,7 @@ function Dashboard() {
                         <div className="ml-6 flex flex-col justify-center max-sm:ml-4">
                             {accountDetail ? (
                                 <>
-                                    <p className="mb-2 text-2xl max-sm:text-xl">{accountDetail.full_name}</p>
+                                    <p className="mb-2 text-2xl max-sm:text-xl">{accountDetail.full_name.slice(0, 15)}</p>
                                     <p className="text-xl max-sm:text-base">{accountDetail.phone}</p>
                                     <p className="mt-2 text-xl max-sm:text-base">{accountDetail.email}</p>
                                 </>
@@ -79,13 +87,14 @@ function Dashboard() {
                         {accountDetail && accountDetail.role === 'Customer' ? (
                             <button 
                                 className="w-1/2 px-4 py-4 text-xl border-2 border-black rounded-xl max-sm:w-1/2 max-sm:text-base max-sm:py-2"
-                                onClick={() => navigate('/reserve')}>
+                                onClick={handleReserve}>
                                 Make Reservation
                             </button>
                         ) : (
                             <button 
-                                className="w-1/2 px-4 py-4 text-xl border-2 border-black rounded-xl max-sm:w-1/2 max-sm:text-base max-sm:py-2">
-                                Add Branch
+                                className="w-1/2 px-4 py-4 text-xl border-2 border-black rounded-xl max-sm:w-1/2 max-sm:text-base max-sm:py-2"
+                                onClick={handleBranchDashboard}>
+                                Manage Branch
                             </button>
                         )}
                     </div>
