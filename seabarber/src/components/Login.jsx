@@ -1,6 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { loginEvent } from "../action/account.action";
+import { ToastContainer, toast, Bounce } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Salon from "../assets/Salon.jpg"
 
 function Login(){
@@ -20,16 +22,26 @@ function Login(){
     const handleLogin = () => {
         loginEvent(loginInfo)
         .then(data => {
-            alert("Login Successfull");
             navigate('/dashboard', { state: { id: data.id } });
         })
-        .catch(error =>{
-            alert(error);
-        })
-    }
+        .catch(error => {
+            toast.error(error.message, {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                transition: Bounce,
+            });
+        });
+    };
 
     return (
         <>
+            <ToastContainer/>
             <nav className='flex flex-row justify-around bg-'>
                 <h1 className='text-4xl py-4 text-black max-sm:text-2xl'>SEA Salon</h1>
                 <ul className='flex flex-row items-center'>
@@ -80,7 +92,6 @@ function Login(){
                     </div>
                 </div>
             </main>
-            
         </>
     );
 }

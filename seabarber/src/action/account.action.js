@@ -23,7 +23,7 @@ export const loginEvent = async (loginDetail) => {
     .then(response => {
         if(!response.ok){
             return response.json().then(error => {
-                throw new Error(error.message);
+                throw new Error(error.error);
             })
         }
         return response.json();
@@ -39,7 +39,7 @@ export const logoutEvent = async (id, logoutDetail) => {
     .then(response => {
         if(!response.ok){
             return response.json().then(error => {
-                throw new Error(error.message);
+                throw new Error(error.error);
             })
         }
         return response.json();
@@ -54,7 +54,7 @@ export const getAccountInfo = async (id) => {
     .then(response => {
         if(!response.ok){
             return response.json().then(error => {
-                throw new Error(error.message);
+                throw new Error(error.error);
             })
         }
         return response.json();

@@ -22,7 +22,7 @@ export const getAllBranch = () => {
     .then(response => {
         if(!response.ok){
             return response.json().then(error => {
-                throw new Error(error.message);
+                throw new Error(error.error);
             })
         }
         return response.json();
@@ -38,7 +38,7 @@ export const editBranch = (id, branchInfo) => {
     .then(response => {
         if(!response.ok){
             return response.json().then(error => {
-                throw new Error(error.message);
+                throw new Error(error.error);
             })
         }
         return response.json();
@@ -53,7 +53,7 @@ export const deleteBranch = (id) => {
     .then(response => {
         if(!response.ok){
             return response.json().then(error => {
-                throw new Error(error.message);
+                throw new Error(error.error);
             })
         }
         return response.json();

@@ -61,11 +61,10 @@ async function deleteBranch(req, res) {
             `DELETE FROM branch WHERE id = $1`,
             [id]
         );
-        if (deletedBranch.rowCount > 0) {
-            res.status(200).json({ message: "Branch Deleted Successfully", deletedBranch: deletedBranch.rows[0] });
-        } else {
-            res.status(404).json({ message: "No Branch Found" });
-        }
+        if (deletedBranch.rowCount == 0) {
+            return res.status(404).json({ message: "No Branch Found" });
+        } 
+        res.status(200).json({ message: "Branch Deleted Successfully", deletedBranch: deletedBranch.rows[0] });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
