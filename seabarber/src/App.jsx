@@ -6,6 +6,8 @@ import { FaStar } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { createReview, getReview, editReview, deleteReview } from './action/review.action';
+import { ToastContainer, toast, Bounce } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const location = useLocation();
@@ -95,7 +97,17 @@ function App() {
   function handleSubmit() {
     createReview(newReview)
     .then(() => {
-      alert('Review Succesfully Added');
+      toast.success('Review Added', {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Bounce,
+        });
       setNewReview({
         name: '',
         comment: '',
@@ -105,7 +117,17 @@ function App() {
       setReview(newReview);
     })
     .catch(error => {
-      alert(error.message);
+      toast.error(error.message, {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Bounce,
+        });
     });
   };
 
@@ -120,7 +142,17 @@ function App() {
         });
         setCurrValue(newReview.star);
         setIsEdit(false);
-        alert('Review successfully updated');
+        toast.success('Review Updated', {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+          transition: Bounce,
+          });
       })
       .catch(error => {
         alert(error.message);
@@ -139,6 +171,17 @@ function App() {
 
   function handleCancelEdit(){
     setIsEdit(false);
+    toast.info('Cancel Edit Review', {
+      position: "top-center",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+      transition: Bounce,
+    });
     setNewReview({
       name: '',
       comment: '',
@@ -161,7 +204,17 @@ function App() {
         comment: '',
         star: 0
       }));
-      alert('Review successfully deleted');
+      toast.success('Review Deleted', {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        transition: Bounce,
+        });
     })
     .catch(error => {
       alert(error);
@@ -170,6 +223,18 @@ function App() {
 
   return (
     <div className='font-body'>
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       <nav className='flex flex-row bg-slate-900 justify-between items-center'>
           <p className='ml-8 text-4xl text-white 
           max-lg:ml-4 max-lg:text-2xl 

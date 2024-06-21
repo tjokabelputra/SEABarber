@@ -7,7 +7,7 @@ export const createReview = async (reviewInfo) => {
     .then(response => {
         if(!response.ok){
             return response.json().then(error => {
-                throw new Error(error.error);
+                throw new Error(error.message);
             })
         }
         return response.json();
