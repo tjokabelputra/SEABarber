@@ -14,6 +14,21 @@ export const createReview = async (reviewInfo) => {
     })
 }
 
+export const getAllReservation = async() => {
+    return fetch('http://localhost:3000/allReservation', {
+        method: 'GET',
+        headers: { "Content-Type": "application/json"}
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(error => {
+                throw new Error(error.message);
+            });
+        }
+        return response.json();
+    })
+}
+
 export const getReview = async (name) => {
     return fetch(`http://localhost:3000/getReview/${name}`, {
         method: 'GET',

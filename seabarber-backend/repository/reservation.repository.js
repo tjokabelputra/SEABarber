@@ -28,9 +28,9 @@ async function createReservation(req, res){
 async function getAllReservation(req, res){
     try{
         const allReservation = await pool.query(
-            `SELECT r.name, r.phone, r.service, b.name AS branch, r.dateandtime 
+            `SELECT r.order_id, r.name, r.phone, r.service, b.name AS branch_name, r.dateandtime 
              FROM reservation r 
-             INNER JOIN branch b ON r.branch_id = b.id`
+             INNER JOIN branch b ON r.branch_id = b.id ORDER BY dateandtime ASC`
         )
         if(allReservation.rows.length > 0){
             res.status(200).json(allReservation.rows);
@@ -68,7 +68,7 @@ async function getReservationByAccount(req, res) {
         const userReservation = await pool.query(
             `SELECT u.id as user_id, u.full_name, r.order_id, r.phone, r.service, b.name AS branch_name , r.dateandtime 
             FROM users u INNER JOIN reservation r ON u.full_name = r.name 
-            INNER JOIN branch b ON r.branch_id = b.id WHERE u.id = $1 ORDER BY dateandtime DESC`, [uid]
+            INNER JOIN branch b ON r.branch_id = b.id WHERE u.id = $1 ORDER BY dateandtime ASC`, [uid]
         );
 
         if (userReservation.rows.length > 0) {
@@ -88,7 +88,7 @@ async function getReservationByBranch(req, res) {
         const branchReservation = await pool.query(
             `SELECT b.id as branch_id, b.name AS branch, r.order_id, r.name, r.phone, r.service, r.dateandtime 
             FROM reservation r INNER JOIN branch b 
-            ON r.branch_id = b.id WHERE branch_id = $1 ORDER BY dateandtime DESC`, [bid]
+            ON r.branch_id = b.id WHERE branch_id = $1 ORDER BY dateandtime ASC`, [bid]
         )
 
         if(branchReservation.rows.length > 0) {

@@ -1,7 +1,8 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { editBranch } from '../action/branch.action';
-import SalonInterior from '../assets/SalonInterior.jpg';
+import { ToastContainer, toast, Bounce } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function EditBranch() {
     const navigate = useNavigate();
@@ -37,29 +38,60 @@ function EditBranch() {
     const handleEditBranch = () => {
         editBranch(branch_id, branch)
         .then(() =>{
-            alert("Branch Information Successfully Edited")
+            toast.success('Branch Successfully Edited', {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                transition: Bounce,
+            });
+            setTimeout(() => {
             navigate('/branchDashboard', { state: { user_id, full_name }});
+            }, 1000)
         })
         .catch(error => {
-            alert(error);
-        }) 
+            toast.error(error.message, {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                transition: Bounce,
+            });
+        })
     };
 
     return (
-        <>
-            <nav className='flex flex-row justify-around bg-gray-100'>
-                <h1 className='text-4xl py-4 text-black max-sm:text-2xl'>SEA Salon</h1>
+        <div className='font-body'>
+            <ToastContainer
+                position="top-center"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
+            />
+            <nav className='flex flex-row justify-around bg-slate-900'>
+                <h1 className='text-4xl py-4 text-white max-sm:text-2xl'>SEA Salon</h1>
                 <ul className='flex flex-row items-center'>
-                    <li className='mx-4 text-2xl text-black cursor-pointer max-sm:text-base max-sm:mx-1' onClick={handleBranchDashboard}>Branch List</li>
+                    <li className='mx-4 text-2xl text-white cursor-pointer max-sm:text-base max-sm:mx-1' onClick={handleBranchDashboard}>Branch List</li>
                 </ul>
             </nav>
-            <main
-                className="h-screen bg-cover bg-center flex justify-center items-center"
-                style={{ backgroundImage: `url(${SalonInterior})`, opacity: 0.80 }}
-            >
-                <div className="w-1/4 h-1/2 bg-white rounded-xl flex flex-col justify-center max-2xl:w-1/3 max-xl:w-3/5 max-sm:w-11/12 max-sm:h-3/5">
-                    <h1 className="pt-4 pb-2 px-8 text-3xl text-center max-sm:text-2xl">Edit Branch</h1>
-                    <div className='mb-2 mx-8 flex flex-col'>
+            <main className='h-svh bg-slate-900 bg-center flex justify-center items-center'>
+                <div className="w-1/4 bg-white rounded-xl flex flex-col justify-center max-2xl:w-1/3 max-xl:w-3/5 max-sm:w-11/12">
+                    <h1 className="mt-8 text-4xl text-center max-sm:text-2xl">Edit Branch</h1>
+                    <div className='mt-6 mx-8 flex flex-col'>
                         <label htmlFor="name" className='mr-4 text-xl max-sm:text-base'>Branch Name</label>
                         <input 
                             type="text" 
@@ -70,7 +102,7 @@ function EditBranch() {
                             className='px-2 py-2 border-2 text-xl border-black rounded-lg max-sm:text-sm'
                         />
                     </div>
-                    <div className='mb-2 mx-8 flex flex-col'>
+                    <div className='mt-4 mx-8 flex flex-col'>
                         <label htmlFor="location" className='mr-4 text-xl max-sm:text-base'>Branch Location</label>
                         <textarea 
                             name="location"
@@ -78,31 +110,31 @@ function EditBranch() {
                             value={branch.location}
                             onChange={handleChange}
                             placeholder='Branch Location' 
-                            className='px-2 py-2  h-32 text-xl border-2 border-black rounded-lg max-xl:w-3/5 resize-none max-lg:w-3/5 max-md:w-4/5'/>
+                            className='px-2 py-2 h-32 text-xl border-2 border-black rounded-lg'/>
                     </div>
-                    <div className='mb-2 mt-4 mx-8 flex flex-row items-center max-sm:ml-4 max-sm:mr-8 max-sm:mt-2'>
-                        <label htmlFor="open_time" className='text-xl mr-4 max-sm:text-base max-sm:mr-1'>Open</label>
+                    <div className='mt-4 ml-8 mr-8 flex flex-row items-center max-sm:ml-4 max-sm:mr-8 max-sm:mt-2'>
+                        <label htmlFor="open_time" className='text-xl mr-2 max-sm:text-base max-sm:mr-1'>Open</label>
                         <input 
                             type="time" 
                             id="open_time" 
                             name="open_time" 
                             value={branch.open_time}
                             onChange={handleChange}
-                            className='w-3/5 px-2 py-2 border-2 border-black rounded-lg max-sm:px-1'
+                            className='w-2/5 px-2 py-2 border-2 border-black rounded-lg max-sm:px-1'
                         />
-                        <label htmlFor="close_time" className='text-xl ml-4 mr-4 max-sm:text-base max-sm:mr-2'>Close</label>
+                        <label htmlFor="close_time" className='text-xl ml-2 mr-2 max-sm:text-base max-sm:mr-2'>Close</label>
                         <input 
                             type="time" 
                             id="close_time" 
                             name="close_time"
                             value={branch.close_time}
                             onChange={handleChange}
-                            className='w-3/5 px-2 py-2 border-2 border-black rounded-lg max-sm:px-1'
+                            className='w-2/5 px-2 py-2 border-2 border-black rounded-lg max-sm:px-1'
                         />
                     </div>
-                    <div className="mt-8 mb-4 flex flex-col items-center">
+                    <div className="mt-6 mb-8 mx-8 flex flex-col items-center">
                         <button 
-                            className="w-3/5 px-2 py-2 text-xl border-2 border-black rounded-xl max-sm:w-1/2 max-sm:text-base max-sm:py-2"
+                            className="w-full py-2 text-xl bg-slate-900 text-white border-2 border-black rounded-xl max-sm:text-base"
                             onClick={handleEditBranch}
                         >
                             Edit Branch
@@ -110,7 +142,7 @@ function EditBranch() {
                     </div>
                 </div>
             </main>
-        </>
+        </div>
     );
 }
 

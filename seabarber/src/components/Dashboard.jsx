@@ -70,7 +70,11 @@ function Dashboard() {
     }
 
     function handelReservationList(){
-        navigate('/reservationList', { state: { id: id, full_name: accountDetail.full_name}})
+        navigate('/reservationList', { state: { id: id, full_name: accountDetail.full_name, role: accountDetail.role}})
+    }
+
+    function handleAdminReservationList(){
+        navigate('/reservationList', { state: { id: id, full_name: accountDetail.full_name, role: accountDetail.role}})
     }
 
     useEffect(() => {
@@ -135,11 +139,18 @@ function Dashboard() {
                                 </button>
                             </>
                         ) : (
-                            <button 
-                                className="py-2 text-xl bg-slate-900 text-white border-2 border-black rounded-xl max-sm:text-base"
-                                onClick={handleBranchDashboard}>
-                                Manage Branch
-                            </button>
+                            <>
+                                <button 
+                                    className="mt-4 w-full py-2 text-xl bg-slate-900 text-white border-2 border-black rounded-xl max-sm:text-base"
+                                    onClick={handleBranchDashboard}>
+                                    Manage Branch
+                                </button>
+                                <button 
+                                className="mt-4 w-full py-2 text-xl bg-slate-900 text-white border-2 border-black rounded-xl max-sm:text-base"
+                                    onClick={handleAdminReservationList}>
+                                    View Reservation
+                                </button>
+                            </>
                         )}
                     </div>
                 </div>
