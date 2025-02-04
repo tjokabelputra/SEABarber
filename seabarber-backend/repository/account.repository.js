@@ -24,37 +24,16 @@ async function login(req, res) {
     const hash = crypto.createHash('sha256').update(password).digest('hex');
 
     try {
-<<<<<<< HEAD
         const user = await pool.query(
-=======
-        const checkEmail = await pool.query(
-            `SELECT * FROM users WHERE email = $1`,
-            [email]
-        );
-
-        if (checkEmail.rows.length === 0) {
-            return res.status(404).json({ error: "Email is Incorrect" });
-        }
-
-        const checkPass = await pool.query(
->>>>>>> f5f30e9f2c81fb26f4ed77c34b63f2d3a7d2f5b1
             `SELECT * FROM users WHERE email = $1 AND password = $2`,
             [email, hash]
         );
 
-<<<<<<< HEAD
         if (user.rows.length === 0) {
             return res.status(401).json({ error: "Invalid email or password" });
         }
 
         res.status(200).json(user.rows[0]);
-=======
-        if (checkPass.rows.length === 0) {
-            return res.status(404).json({ error: "Password is Incorrect" });
-        }
-
-        res.status(200).json(checkPass.rows[0]);
->>>>>>> f5f30e9f2c81fb26f4ed77c34b63f2d3a7d2f5b1
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

@@ -72,8 +72,7 @@ function Login(){
                 </ul>
             </nav>
             <main 
-                className="h-svh bg-slate-900 bg-center flex justify-center items-center"
-            >
+                className="h-svh bg-slate-900 bg-center flex justify-center items-center">
                 <div className="w-1/4 bg-white rounded-xl flex flex-col max-2xl:w-3/5 max-lg:w-3/5 max-sm:w-11/12">
                     <h1 className="mt-8 text-4xl text-center">Login</h1>
                     <p className="mt-4 mx-4 text-xl text-center font-semibold max-sm:mx-2">Login to Access Our Rating and Reservation System</p>
