@@ -10,6 +10,8 @@ import BranchDashboard from './components/BranchDashboard.jsx'
 import CreateBranch from './components/CreateBranch.jsx'
 import EditBranch from './components/EditBranch.jsx'
 import BranchInfo from './components/BranchInfo.jsx'
+import ReservationList from './components/ReservationList.jsx'
+import EditReservation from './components/EditReservation.jsx'
 import './index.css'
 
 const router = createBrowserRouter([
@@ -48,6 +50,14 @@ const router = createBrowserRouter([
   {
     path: "/branch",
     element: <BranchInfo />
+  },
+  {
+    path: "/reservationList",
+    element: <ReservationList />
+  },
+  {
+    path: "/editReservation",
+    element: <EditReservation/>
   }
 ])
 

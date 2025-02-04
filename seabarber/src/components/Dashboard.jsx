@@ -2,8 +2,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { getAccountInfo } from "../action/account.action";
 import { logoutEvent } from "../action/account.action";
 import { useState, useEffect } from "react";
-import Salon from "../assets/Salon.jpg"
 import Default from "../assets/Default.jpg";
+import { ToastContainer, toast, Bounce } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Dashboard() {
     const navigate = useNavigate();
@@ -33,17 +34,43 @@ function Dashboard() {
         const logoutInfo = {full_name:accountDetail.full_name, email:accountDetail.email, phone:accountDetail.phone, password:accountDetail.password}  
         logoutEvent(id, logoutInfo)  
         .then(data => {
-            setAccountDetail(null);
-            alert(data.message);
-            navigate('/login');
+            toast.success('Successfully Log Out', {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                transition: Bounce,
+            });
+            setTimeout(() => {
+                setAccountDetail(null);
+                navigate('/login');
+            }, 1000)
         })
         .catch(error => {
-            alert(error);
+            toast.error(error.message, {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                transition: Bounce,
+            });
         });
     }
 
     function handleHome(){
         navigate('/', { state: { id: id, full_name: accountDetail.full_name, phone: accountDetail.phone, role: accountDetail.role } });
+    }
+
+    function handelReservationList(){
+        navigate('/reservationList', { state: { id: id, full_name: accountDetail.full_name}})
     }
 
     useEffect(() => {
@@ -57,6 +84,18 @@ function Dashboard() {
 
     return (
         <div className="font-body">
+            <ToastContainer
+                position="top-center"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
+            />
             <nav className='flex flex-row justify-around bg-slate-900'>
                 <h1 className='text-4xl py-4 text-white max-sm:text-2xl'>SEA Salon</h1>
                 <ul className='flex flex-row items-center'>
@@ -91,7 +130,7 @@ function Dashboard() {
                                 </button>
                                 <button 
                                     className="mt-4 w-full py-2 text-xl bg-slate-900 text-white border-2 border-black rounded-xl max-sm:text-base"
-                                    onClick={null}>
+                                    onClick={handelReservationList}>
                                     View Reservation
                                 </button>
                             </>

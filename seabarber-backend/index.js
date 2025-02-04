@@ -17,6 +17,11 @@ app.use(cors())
 
 app.post("/reserve", reservationRepo.createReservation);
 app.get("/allReservation", reservationRepo.getAllReservation);
+app.get("/reservation/:rid", reservationRepo.getReservationById)
+app.get("/userReservation/:uid", reservationRepo.getReservationByAccount);
+app.get("/branchReservation/:bid", reservationRepo.getReservationByBranch);
+app.put("/editReservation/:rid", reservationRepo.updateReservation);
+app.delete("/deleteReservation/:rid", reservationRepo.deleteReservation);
 
 app.post("/review", reviewRepo.addReview);
 app.get("/getReview/:name", reviewRepo.getReview);
