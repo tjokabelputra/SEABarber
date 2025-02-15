@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { getAllReservation } from "../action/review.action";
+import { getAllReservation } from "../action/reservation.action";
 import { getUserReservation } from "../action/reservation.action";
 import { deleteReservation } from "../action/reservation.action";
 import { ToastContainer, toast, Bounce } from 'react-toastify';
@@ -19,7 +19,7 @@ function ReservationList() {
     }
 
     function handleEditReservation(order_id) {
-        navigate('/editReservation', { state: {id, r_id: order_id, full_name}})
+        navigate('/editReservation', { state: {id, r_id: order_id, full_name, role}})
     }
 
     function handleDeleteReservation(order_id){
@@ -54,46 +54,31 @@ function ReservationList() {
     }
 
     function handleUserReservation() {
-        if(role == "Admin"){
-            getAllReservation()
-            .then(data => {
-                setUserReservation(data);
-                setDisplayedReservation(data)
-            })
-            .catch(error => {
-                toast.error(error.message, {
-                    position: "top-center",
-                    autoClose: 3000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    transition: Bounce,
-                });
+        const fetchReservations = role === "Admin" ? getAllReservation : () => getUserReservation(id);
+
+        fetchReservations()
+        .then(data => {
+            if (data.length === 0) {
+                throw new Error("No reservations available."); // Trigger backend error-like behavior
+            }
+            setUserReservation(data);
+            setDisplayedReservation(data);
+        })
+        .catch(error => {
+            setUserReservation([]);
+            setDisplayedReservation([]);
+            toast.error(error.message, {
+                position: "top-center",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                transition: Bounce,
             });
-        }
-        else{
-            getUserReservation(id)
-                .then(data => {
-                    setUserReservation(data);
-                    setDisplayedReservation(data)
-                })
-                .catch(error => {
-                    toast.error(error.message, {
-                        position: "top-center",
-                        autoClose: 3000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "dark",
-                        transition: Bounce,
-                    });
-                });
-        }
+        });
     }
 
     function handleSearch() {

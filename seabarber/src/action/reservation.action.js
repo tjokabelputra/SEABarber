@@ -1,5 +1,5 @@
 export const createReservation = async (reservationInfo) => {
-    return fetch('http://localhost:3000/reserve', {
+    return fetch('https://api-rwvi7zgxda-uc.a.run.app/reserve', {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(reservationInfo)
@@ -14,8 +14,23 @@ export const createReservation = async (reservationInfo) => {
     })
 }
 
+export const getAllReservation = async() => {
+    return fetch('https://api-rwvi7zgxda-uc.a.run.app/allReservation', {
+        method: 'GET',
+        headers: { "Content-Type": "application/json"}
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(error => {
+                throw new Error(error.message);
+            });
+        }
+        return response.json();
+    })
+}
+
 export const getReservationById = async (rid) => {
-    return fetch(`http://localhost:3000/reservation/${rid}`, {
+    return fetch(`https://api-rwvi7zgxda-uc.a.run.app/reservation/${rid}`, {
         method: 'GET',
         headers: { "Content-Type": "application/json" }
     })
@@ -30,7 +45,7 @@ export const getReservationById = async (rid) => {
 }
 
 export const getUserReservation = async(id) => {
-    return fetch(`http://localhost:3000/userReservation/${id}`, {
+    return fetch(`https://api-rwvi7zgxda-uc.a.run.app/userReservation/${id}`, {
         method: 'GET',
         headers: { "Content-Type": "application/json" }
     })
@@ -45,7 +60,7 @@ export const getUserReservation = async(id) => {
 }
 
 export const updateReservation = async(rid, editedReservation) => {
-    return fetch(`http://localhost:3000/editReservation/${rid}`, {
+    return fetch(`https://api-rwvi7zgxda-uc.a.run.app/editReservation/${rid}`, {
         method: 'PUT',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editedReservation)
@@ -61,7 +76,7 @@ export const updateReservation = async(rid, editedReservation) => {
 }
 
 export const deleteReservation = async(rid) => {
-    return fetch(`http://localhost:3000/deleteReservation/${rid}`, {
+    return fetch(`https://api-rwvi7zgxda-uc.a.run.app/deleteReservation/${rid}`, {
         method: 'DELETE',
         headers: { "Content-Type": "application/json" },
     })

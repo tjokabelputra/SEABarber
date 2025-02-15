@@ -1,5 +1,5 @@
 export const createAccount = async (newAccountInfo) => {
-    return fetch('http://localhost:3000/register', {
+    return fetch('https://api-rwvi7zgxda-uc.a.run.app/register', {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newAccountInfo)
@@ -15,7 +15,7 @@ export const createAccount = async (newAccountInfo) => {
 }
 
 export const loginEvent = async (loginDetail) => {
-    return fetch('http://localhost:3000/login', {
+    return fetch('https://api-rwvi7zgxda-uc.a.run.app/login', {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginDetail)
@@ -31,7 +31,7 @@ export const loginEvent = async (loginDetail) => {
 }
 
 export const logoutEvent = async (id, logoutDetail) => {
-    return fetch(`http://localhost:3000/logout/${id}`, {
+    return fetch(`https://api-rwvi7zgxda-uc.a.run.app/logout/${id}`, {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(logoutDetail)
@@ -47,7 +47,7 @@ export const logoutEvent = async (id, logoutDetail) => {
 }
 
 export const getAccountInfo = async (id) => {
-    return fetch(`http://localhost:3000/detail/${id}`, {
+    return fetch(`https://api-rwvi7zgxda-uc.a.run.app/detail/${id}`, {
         method: 'GET',
         headers: { "Content-Type": "application/json" },
     })

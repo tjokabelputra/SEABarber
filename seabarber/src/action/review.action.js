@@ -1,5 +1,5 @@
 export const createReview = async (reviewInfo) => {
-    return fetch('http://localhost:3000/review', {
+    return fetch('https://api-rwvi7zgxda-uc.a.run.app/review', {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(reviewInfo)
@@ -14,23 +14,8 @@ export const createReview = async (reviewInfo) => {
     })
 }
 
-export const getAllReservation = async() => {
-    return fetch('http://localhost:3000/allReservation', {
-        method: 'GET',
-        headers: { "Content-Type": "application/json"}
-    })
-    .then(response => {
-        if (!response.ok) {
-            return response.json().then(error => {
-                throw new Error(error.message);
-            });
-        }
-        return response.json();
-    })
-}
-
 export const getReview = async (name) => {
-    return fetch(`http://localhost:3000/getReview/${name}`, {
+    return fetch(`https://api-rwvi7zgxda-uc.a.run.app/getReview/${name}`, {
         method: 'GET',
         headers: { "Content-Type": "application/json" },
     })
@@ -45,7 +30,7 @@ export const getReview = async (name) => {
 }
 
 export const editReview = async (name, editReviewInfo) => {
-    return fetch(`http://localhost:3000/editReview/${name}`, {
+    return fetch(`https://api-rwvi7zgxda-uc.a.run.app/editReview/${name}`, {
         method: 'PUT',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editReviewInfo)
@@ -61,7 +46,7 @@ export const editReview = async (name, editReviewInfo) => {
 }
 
 export const deleteReview = async (name) => {
-    return fetch(`http://localhost:3000/deleteReview/${name}`, {
+    return fetch(`https://api-rwvi7zgxda-uc.a.run.app/deleteReview/${name}`, {
         method: 'DELETE',
         headers: { "Content-Type": "application/json" },
     })

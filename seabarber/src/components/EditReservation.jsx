@@ -19,7 +19,7 @@ function EditReservation() {
         dateandtime: '',
     });
     const [branchInfo, setBranchInfo] = useState({name:'', open: '', close: '' });
-    const { id, r_id, full_name } = location.state || {};
+    const { id, r_id, full_name, role } = location.state || {};
 
     useEffect(() => {
         handleGetAllBranch();
@@ -113,7 +113,7 @@ function EditReservation() {
                         transition: Bounce,
                     });
                     setTimeout(() => {
-                        navigate('/reservationList', { state: { id, full_name } });
+                        navigate('/reservationList', { state: { id, full_name, role } });
                     }, 1000);
                 })
                 .catch(error => {

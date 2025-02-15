@@ -1,5 +1,5 @@
 export const createBranch = (newBranchInfo) => {
-    return fetch('http://localhost:3000/addBranch', {
+    return fetch('https://api-rwvi7zgxda-uc.a.run.app/addBranch', {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newBranchInfo)
@@ -15,7 +15,7 @@ export const createBranch = (newBranchInfo) => {
 }
 
 export const getAllBranch = () => {
-    return fetch('http://localhost:3000/allBranch', {
+    return fetch('https://api-rwvi7zgxda-uc.a.run.app/allBranch', {
         method: 'GET',
         headers: { "Content-Type": "application/json" },
     })
@@ -30,7 +30,7 @@ export const getAllBranch = () => {
 }
 
 export const editBranch = (id, branchInfo) => {
-    return fetch(`http://localhost:3000/editBranch/${id}`, {
+    return fetch(`https://api-rwvi7zgxda-uc.a.run.app/editBranch/${id}`, {
         method: 'PUT',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(branchInfo)
@@ -46,7 +46,7 @@ export const editBranch = (id, branchInfo) => {
 }
 
 export const deleteBranch = (id) => {
-    return fetch(`http://localhost:3000/deleteBranch/${id}`, {
+    return fetch(`https://api-rwvi7zgxda-uc.a.run.app/deleteBranch/${id}`, {
         method: 'DELETE',
         headers: { "Content-Type": "application/json" },
     })
