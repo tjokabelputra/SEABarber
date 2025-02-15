@@ -1,11 +1,11 @@
 const pool = require("../db/instance");
 
 async function createReservation(req, res){
-    const {name, phone, service, branch_id, dateandtime} = req.body;
+    const {user_id, branch_id, name, phone, service, reservation_time} = req.body;
 
     try{
         const checkBranch = await pool.query(
-            `SELECT * FROM branch WHERE id = $1`,
+            `SELECT * FROM branches WHERE id = $1`,
             [branch_id]
         )
 
@@ -14,11 +14,11 @@ async function createReservation(req, res){
         }
 
         const reservation = await pool.query(
-        `INSERT INTO reservation (name, phone, service, branch_id,  dateandtime) VALUES ($1, $2, $3, $4, $5) RETURNING *`, 
-            [name, phone, service, branch_id, dateandtime]
+        `INSERT INTO reservations (user_id, branch_id, name, phone, service, reservation_time) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`, 
+            [user_id, branch_id, name, phone, service, reservation_time]
         );
 
-        res.status(200).json(reservation.rows);
+        res.status(200).json(reservation.rows[0]);
     }
     catch(error){
         res.status(500).json({ error: error.message });
@@ -28,9 +28,9 @@ async function createReservation(req, res){
 async function getAllReservation(req, res){
     try{
         const allReservation = await pool.query(
-            `SELECT r.order_id, r.name, r.phone, r.service, b.name AS branch_name, r.dateandtime 
-             FROM reservation r 
-             INNER JOIN branch b ON r.branch_id = b.id ORDER BY dateandtime ASC`
+            `SELECT r.id, r.name, r.phone, r.service, b.name AS branch_name, r.reservation_time
+             FROM reservations r 
+             INNER JOIN branches b ON r.branch_id = b.id ORDER BY reservation_time ASC`
         )
         if(allReservation.rows.length > 0){
             res.status(200).json(allReservation.rows);
@@ -48,7 +48,7 @@ async function getReservationById(req, res){
     const { rid } = req.params
     try{
         const reservation = await pool.query(
-            `SELECT * FROM reservation WHERE order_id = $1`,[rid]
+            `SELECT * FROM reservations WHERE id = $1`,[rid]
         )
         if(reservation.rows.length > 0){
             res.status(200).json(reservation.rows[0])
@@ -66,9 +66,9 @@ async function getReservationByAccount(req, res) {
     const { uid } = req.params;
     try {
         const userReservation = await pool.query(
-            `SELECT u.id as user_id, u.full_name, r.order_id, r.phone, r.service, b.name AS branch_name , r.dateandtime 
-            FROM users u INNER JOIN reservation r ON u.full_name = r.name 
-            INNER JOIN branch b ON r.branch_id = b.id WHERE u.id = $1 ORDER BY dateandtime ASC`, [uid]
+            `SELECT r.id, r.user_id, b.name as branch_name, r.name, r.phone, r.service, r.reservation_time 
+            FROM reservations r INNER JOIN branches b
+            ON r.branch_id = b.id WHERE r.user_id = $1 ORDER BY reservation_time ASC`, [uid]
         );
 
         if (userReservation.rows.length > 0) {
@@ -86,9 +86,9 @@ async function getReservationByBranch(req, res) {
     const { bid } = req.params;
     try{
         const branchReservation = await pool.query(
-            `SELECT b.id as branch_id, b.name AS branch, r.order_id, r.name, r.phone, r.service, r.dateandtime 
-            FROM reservation r INNER JOIN branch b 
-            ON r.branch_id = b.id WHERE branch_id = $1 ORDER BY dateandtime ASC`, [bid]
+            `SELECT r.id, r.user_id, b.name as branch_name, r.name, r.phone, r.service, r.reservation_time 
+            FROM reservations r INNER JOIN branches b
+            ON r.branch_id = b.id WHERE b.id = $1 ORDER BY reservation_time ASC`, [bid]
         )
 
         if(branchReservation.rows.length > 0) {
@@ -109,7 +109,7 @@ async function updateReservation(req, res){
 
     try{
         const editedReservation = await pool.query(
-            `UPDATE reservation SET service = $1, branch_id = $2, dateandtime = $3 WHERE order_id = $4 RETURNING *`, [service, branch_id, dateandtime, rid]
+            `UPDATE reservations SET service = $1, branch_id = $2, reservation_time = $3 WHERE id = $4 RETURNING *`, [service, branch_id, dateandtime, rid]
         )
         if (editedReservation.rowCount > 0) {
             res.status(200).json(editedReservation.rows[0]);
@@ -127,7 +127,7 @@ async function deleteReservation(req, res) {
     const { rid } = req.params
     try{
         const deleteReservation = await pool.query(
-            `DELETE FROM reservation WHERE order_id = $1`, [rid]
+            `DELETE FROM reservations WHERE id = $1`, [rid]
         )
         if(deleteReservation.rowCount == 0){
             return res.status(404).json({ message: "No Branch Found" });

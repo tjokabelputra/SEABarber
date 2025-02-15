@@ -1,12 +1,10 @@
 const pool = require("../db/instance");
 
 async function addReview(req, res){
-    const {name, comment, star} = req.body;
+    const { uid } = req.params;
+    const {comment, star} = req.body;
 
-    if(name === ''){
-        return res.status(400).json({ message: "Please Enter Your Name" });
-    }
-    else if(comment === ''){
+    if(comment === ''){
         return res.status(400).json({ message: "Please Enter Your Comment" });
     }
     else if(star === 0){
@@ -15,8 +13,8 @@ async function addReview(req, res){
 
     try{
         const review = await pool.query(
-        `INSERT INTO review (name, comment, score) VALUES ($1, $2, $3) RETURNING *`, 
-            [name, comment, star]
+        `INSERT INTO reviews (user_id, comment, score) VALUES ($1, $2, $3) RETURNING *`, 
+            [uid, comment, star]
         );
 
         res.status(200).json(review.rows);
@@ -27,12 +25,12 @@ async function addReview(req, res){
 }
 
 async function getReview(req, res) {
-    const { name } = req.params;
+    const { uid } = req.params;
 
     try {
         const userReview = await pool.query(
-            `SELECT * FROM review WHERE name = $1`,
-            [name]
+            `SELECT * FROM reviews WHERE user_id = $1`,
+            [uid]
         );
         if (userReview.rows.length === 0) {
             return res.status(404).json({ message: "No Review Found" });
@@ -45,13 +43,13 @@ async function getReview(req, res) {
 
 
 async function editReview(req, res){
-    const { name } = req.params;
+    const { uid } = req.params;
     const { comment, score } = req.body;
 
     try{
         const updatedReview = await pool.query(
-            `UPDATE review SET comment = $1, score = $2 WHERE name = $3 RETURNING *`,
-            [comment, score, name]
+            `UPDATE reviews SET comment = $1, score = $2 WHERE user_id = $3 RETURNING *`,
+            [comment, score, uid]
         )
         if(updatedReview.rows.length == 0){
             return res.status(404).json({ message: "No Review Found" });
@@ -64,12 +62,12 @@ async function editReview(req, res){
 }
 
 async function deleteReview(req, res){
-    const { name } = req.params;
+    const { rid } = req.params;
     
     try{
         const deletedReview = await pool.query(
-            `DELETE FROM review WHERE name = $1`,
-            [name]
+            `DELETE FROM reviews WHERE id = $1`,
+            [rid]
         )
         if (deletedReview.rowCount == 0) {
             return res.status(404).json({ message: "No Review Found" });
