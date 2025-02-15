@@ -1,11 +1,12 @@
 const express = require('express')
 const reviewRepo = require('../repository/review.repository')
+const accessValidation = require('../middleware/authMiddleware')
 
 const router = express.Router()
 
-router.post("/add/:uid", reviewRepo.addReview)
-router.get("/get/:uid", reviewRepo.getReview)
-router.put("/edit/:uid", reviewRepo.editReview)
-router.delete("/delete/:rid", reviewRepo.deleteReview)
+router.post("/add",accessValidation, reviewRepo.addReview)
+router.get("/get",accessValidation, reviewRepo.getReview)
+router.put("/edit",accessValidation, reviewRepo.editReview)
+router.delete("/delete/:rid",accessValidation, reviewRepo.deleteReview)
 
 module.exports = router

@@ -1,7 +1,10 @@
 const pool = require("../db/instance");
 
 async function createReservation(req, res){
-    const {user_id, branch_id, name, phone, service, reservation_time} = req.body;
+    const {branch_id, service, reservation_time} = req.body;
+    const user_id = req.userData.id
+    const name = req.userData.username
+    const phone = req.userData.phone
 
     try{
         const checkBranch = await pool.query(
@@ -63,7 +66,8 @@ async function getReservationById(req, res){
 }
 
 async function getReservationByAccount(req, res) {
-    const { uid } = req.params;
+    const uid = req.userData.id
+    
     try {
         const userReservation = await pool.query(
             `SELECT r.id, r.user_id, b.name as branch_name, r.name, r.phone, r.service, r.reservation_time 

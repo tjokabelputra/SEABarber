@@ -33,13 +33,13 @@ async function getAllBranch(req, res){
 }
 
 async function editBranch(req, res) {
-    const { id } = req.params;
+    const { bid } = req.params;
     const { name, location, open_time, closing_time } = req.body;
 
     try{
         const editedBranch = await pool.query(
             `UPDATE branches SET name = $1, location = $2, open_time = $3, closing_time = $4 WHERE id = $5 RETURNING *`,
-            [name, location, open_time, closing_time, id]
+            [name, location, open_time, closing_time, bid]
         )
         if (editedBranch.rowCount > 0) {
             res.status(200).json(editedBranch.rows[0]);
@@ -54,12 +54,12 @@ async function editBranch(req, res) {
 }
 
 async function deleteBranch(req, res) {
-    const { id } = req.params;
+    const { bid } = req.params;
 
     try {
         const deletedBranch = await pool.query(
             `DELETE FROM branches WHERE id = $1`,
-            [id]
+            [bid]
         );
         if (deletedBranch.rowCount == 0) {
             return res.status(404).json({ message: "No Branch Found" });

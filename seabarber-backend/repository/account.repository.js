@@ -1,5 +1,6 @@
 const pool = require("../db/instance");
 const crypto = require('crypto');
+const jwt = require('jsonwebtoken')
 
 async function createAccount(req, res){
     const {username, email, phone, password} = req.body;
@@ -33,8 +34,29 @@ async function login(req, res) {
         if (user.rows.length === 0) {
             return res.status(401).json({ error: "Invalid email or password" });
         }
+        else{
+            const payload = {
+                id: user.rows[0].id,
+                username: user.rows[0].username,
+                email: user.rows[0].email,
+                phone: user.rows[0].phone,
+                role: user.rows[0].role
+            }
 
-        res.status(200).json(user.rows[0]);
+            const secret = process.env.JWT_SECRET
+            const token = jwt.sign(payload, secret, { expiresIn: "30m"})
+
+            return res.status(200).json({
+                account: {
+                    id: user.rows[0].id,
+                    username: user.rows[0].username,
+                    email: user.rows[0].email,
+                    phone: user.rows[0].phone,
+                    role: user.rows[0].role
+                },
+                token: token
+            })
+        }
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

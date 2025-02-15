@@ -1,7 +1,7 @@
 const pool = require("../db/instance");
 
 async function addReview(req, res){
-    const { uid } = req.params;
+    const uid = req.userData.id
     const {comment, star} = req.body;
 
     if(comment === ''){
@@ -17,7 +17,7 @@ async function addReview(req, res){
             [uid, comment, star]
         );
 
-        res.status(200).json(review.rows);
+        res.status(200).json(review.rows[0]);
     }
     catch(error){
         res.status(500).json({ error: error.message });
@@ -25,7 +25,7 @@ async function addReview(req, res){
 }
 
 async function getReview(req, res) {
-    const { uid } = req.params;
+    const uid = req.userData.id
 
     try {
         const userReview = await pool.query(
@@ -43,7 +43,7 @@ async function getReview(req, res) {
 
 
 async function editReview(req, res){
-    const { uid } = req.params;
+    const uid = req.userData.id
     const { comment, score } = req.body;
 
     try{
