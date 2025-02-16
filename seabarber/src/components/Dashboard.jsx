@@ -1,38 +1,39 @@
-import { useNavigate, useLocation } from "react-router-dom";
-import { getAccountInfo } from "../action/account.action";
+import { useNavigate } from "react-router-dom";
 import { logoutEvent } from "../action/account.action";
 import { useState, useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
 import Default from "../assets/Default.jpg";
 import { ToastContainer, toast, Bounce } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function Dashboard() {
     const navigate = useNavigate();
-    const location = useLocation();
     const [accountDetail, setAccountDetail] = useState(null);
-    const { id } = location.state || {};
-
-    function handleUserDetail(){
-        getAccountInfo(id)
-        .then(data => {
-            setAccountDetail(data);
-        })
-        .catch(error => {
-            alert(error);
-        })
-    }
 
     function handleBranchDashboard(){
-        navigate('/branchDashboard', { state: { user_id : id, full_name: accountDetail.full_name } });
+        navigate('/branchDashboard', { state: { user_id : accountDetail.id, full_name: accountDetail.username } });
     }
 
     function handleReserve(){
         navigate('/reserve', { state: { id, full_name: accountDetail.full_name, phone: accountDetail.phone, role: accountDetail.role } });
     }
 
+    function handleHome(){
+        navigate('/', { state: { id: id, full_name: accountDetail.full_name, phone: accountDetail.phone, role: accountDetail.role } });
+    }
+
+    function handelReservationList(){
+        navigate('/reservationList', { state: { id: id, full_name: accountDetail.full_name, role: accountDetail.role}})
+    }
+
+    function handleAdminReservationList(){
+        navigate('/reservationList', { state: { id: id, full_name: accountDetail.full_name, role: accountDetail.role}})
+    }
+
     function handleLogOut(){
-        const logoutInfo = {full_name:accountDetail.full_name, email:accountDetail.email, phone:accountDetail.phone, password:accountDetail.password}  
-        logoutEvent(id, logoutInfo)  
+        const token = localStorage.getItem("jwt")
+        localStorage.removeItem("jwt")  
+        logoutEvent(token)
         .then(data => {
             toast.success('Successfully Log Out', {
                 position: "top-center",
@@ -65,26 +66,28 @@ function Dashboard() {
         });
     }
 
-    function handleHome(){
-        navigate('/', { state: { id: id, full_name: accountDetail.full_name, phone: accountDetail.phone, role: accountDetail.role } });
-    }
-
-    function handelReservationList(){
-        navigate('/reservationList', { state: { id: id, full_name: accountDetail.full_name, role: accountDetail.role}})
-    }
-
-    function handleAdminReservationList(){
-        navigate('/reservationList', { state: { id: id, full_name: accountDetail.full_name, role: accountDetail.role}})
-    }
-
     useEffect(() => {
-        if(id){
-            handleUserDetail();
+        const token = localStorage.getItem("jwt");
+        if(!token){
+            navigate('/login')
+            return
         }
-        else{
-            navigate('/login');
+
+        try{
+            const decode = jwtDecode(token)
+            setAccountDetail({
+                id: decode.id,
+                username: decode.username,
+                email: decode.email,
+                phone: decode.phone,
+                role: decode.role
+            });
         }
-    }, [id]);
+        catch (error){
+            localStorage.removeItem("jwt")
+            navigate("/login")
+        }
+    }, []);
 
     return (
         <div className="font-body">
@@ -116,7 +119,7 @@ function Dashboard() {
                     <div className="text-center flex flex-col justify-center max-sm:ml-4">
                         {accountDetail ? (
                             <>
-                                <p className="mt-6 text-2xl">{accountDetail.full_name.slice(0, 15)}</p>
+                                <p className="mt-6 text-2xl">{accountDetail.username.slice(0, 15)}</p>
                                     <p className="mt-4 text-2xl">{accountDetail.phone}</p>
                                     <p className="mt-4 text-2xl">{accountDetail.email}</p>
                             </>

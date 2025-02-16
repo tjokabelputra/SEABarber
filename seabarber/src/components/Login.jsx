@@ -21,6 +21,8 @@ function Login(){
     const handleLogin = () => {
         loginEvent(loginInfo)
         .then(data => {
+            const token = data.token
+            localStorage.setItem("jwt", token)
             toast.success('Login Successfull', {
                 position: "top-center",
                 autoClose: 3000,

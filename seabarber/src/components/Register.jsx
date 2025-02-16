@@ -7,7 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 function Register(){
     const navigate = useNavigate();
     const [newAccount, setNewAccount] = useState({
-        full_name: '',
+        username: '',
         email: '',
         phone: '',
         password: '',
@@ -40,6 +40,7 @@ function Register(){
             }, 1000);
         })
         .catch(error => {
+            console.log(error.message)
             toast.error(error.message, {
                 position: "top-center",
                 autoClose: 3000,
@@ -80,13 +81,13 @@ function Register(){
                     <h1 className="mt-8 text-4xl text-center">Register</h1>
                     <p className="mt-4 mx-4 text-xl text-center font-semibold max-sm:mx-2">Register Today to Access Exclusive Content</p>
                     <div className='mt-6 mx-8 flex flex-col'>
-                        <label htmlFor="full_name" className='mr-4 text-xl max-sm:text-base'>Full Name</label>
+                        <label htmlFor="username" className='mr-4 text-xl max-sm:text-base'>Full Name</label>
                         <input 
                             type="text" 
-                            name="full_name" 
-                            id="full_name" 
+                            name="username" 
+                            id="username" 
                             placeholder="Full Name" 
-                            value={newAccount.full_name}
+                            value={newAccount.username}
                             onChange={handleChange}
                             className='px-2 py-2 border-2 text-xl border-black rounded-lg'
                         />

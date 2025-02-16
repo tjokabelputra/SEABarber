@@ -1,5 +1,5 @@
 export const createAccount = async (newAccountInfo) => {
-    return fetch('https://api-rwvi7zgxda-uc.a.run.app/register', {
+    return fetch('http://localhost:3000/account/register', {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newAccountInfo)
@@ -7,7 +7,7 @@ export const createAccount = async (newAccountInfo) => {
     .then(response => {
         if(!response.ok){
             return response.json().then(error => {
-                throw new Error(error.message);
+                throw new Error(error.error);
             })
         }
         return response.json();
@@ -15,7 +15,7 @@ export const createAccount = async (newAccountInfo) => {
 }
 
 export const loginEvent = async (loginDetail) => {
-    return fetch('https://api-rwvi7zgxda-uc.a.run.app/login', {
+    return fetch('http://localhost:3000/account/login', {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(loginDetail)
@@ -30,33 +30,20 @@ export const loginEvent = async (loginDetail) => {
     })
 }
 
-export const logoutEvent = async (id, logoutDetail) => {
-    return fetch(`https://api-rwvi7zgxda-uc.a.run.app/logout/${id}`, {
+export const logoutEvent = async (token) => {
+    return fetch(`http://localhost:3000/account/logout`, {
         method: 'POST',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(logoutDetail)
+        headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
     })
     .then(response => {
-        if(!response.ok){
+        if (!response.ok) {
             return response.json().then(error => {
                 throw new Error(error.error);
-            })
+            });
         }
         return response.json();
-    })
-}
-
-export const getAccountInfo = async (id) => {
-    return fetch(`https://api-rwvi7zgxda-uc.a.run.app/detail/${id}`, {
-        method: 'GET',
-        headers: { "Content-Type": "application/json" },
-    })
-    .then(response => {
-        if(!response.ok){
-            return response.json().then(error => {
-                throw new Error(error.error);
-            })
-        }
-        return response.json();
-    })
-}
+    });
+};
