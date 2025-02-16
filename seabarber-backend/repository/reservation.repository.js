@@ -1,6 +1,14 @@
 const pool = require("../db/instance");
+const { validationResult } = require('express-validator')
 
 async function createReservation(req, res){
+    const errors = validationResult(req)
+    
+    if(!errors.isEmpty()){
+        console.log(errors)
+        return res.status(422).json({ error: "Invalid Input, please check your data" })
+    }
+    
     const {branch_id, service, reservation_time} = req.body;
     const user_id = req.userData.id
     const name = req.userData.username
@@ -13,7 +21,7 @@ async function createReservation(req, res){
         )
 
         if(checkBranch.rows.length === 0 ){
-            return res.status(404).json({ message: "No Branch Found" });
+            return res.status(404).json({ error: "No Branch Found" });
         }
 
         const reservation = await pool.query(
@@ -21,7 +29,7 @@ async function createReservation(req, res){
             [user_id, branch_id, name, phone, service, reservation_time]
         );
 
-        res.status(200).json(reservation.rows[0]);
+        res.status(201).json(reservation.rows[0]);
     }
     catch(error){
         res.status(500).json({ error: error.message });
@@ -37,9 +45,6 @@ async function getAllReservation(req, res){
         )
         if(allReservation.rows.length > 0){
             res.status(200).json(allReservation.rows);
-        }
-        else{
-            res.status(404).json({ message: "No Reservation Found" });
         }
     }
     catch(error){
@@ -57,7 +62,7 @@ async function getReservationById(req, res){
             res.status(200).json(reservation.rows[0])
         }
         else{
-            res.status(404).json({ message: "No Reservation Found" });
+            res.status(404).json({ error: "No Reservation Found" });
         }
     }
     catch(error){
@@ -78,7 +83,7 @@ async function getReservationByAccount(req, res) {
         if (userReservation.rows.length > 0) {
             res.status(200).json(userReservation.rows);
         } else {
-            res.status(404).json({ message: "No Reservation Found" });
+            res.status(404).json({ error: "No Reservation Found" });
         }
     } 
     catch (error) {
@@ -99,7 +104,7 @@ async function getReservationByBranch(req, res) {
             res.status(200).json(branchReservation.rows)
         }
         else{
-            res.status(404).json({ message: "No Reservation Found" });
+            res.status(404).json({ error: "No Reservation Found" });
         }
     }
     catch (error) {
@@ -119,7 +124,7 @@ async function updateReservation(req, res){
             res.status(200).json(editedReservation.rows[0]);
         } 
         else {
-            res.status(404).json({ message: "Reservation Not Found" });
+            res.status(404).json({ error: "Reservation Not Found" });
         }
     }
     catch (error) {
@@ -134,7 +139,7 @@ async function deleteReservation(req, res) {
             `DELETE FROM reservations WHERE id = $1`, [rid]
         )
         if(deleteReservation.rowCount == 0){
-            return res.status(404).json({ message: "No Branch Found" });
+            return res.status(404).json({ error: "No Branch Found" });
         }
         res.status(200).json({ message: "Reservation Deleted Successfully", deletedReservation: deleteReservation.rows[0] });
     }

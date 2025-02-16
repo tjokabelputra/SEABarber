@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { jwtDecode } from "jwt-decode"
 import { createReservation } from "../action/reservation.action";
 import { getAllBranch } from "../action/branch.action";
 import { ToastContainer, toast, Bounce } from 'react-toastify';
@@ -8,29 +9,19 @@ import 'react-toastify/dist/ReactToastify.css';
 function Reservation() {
     const navigate = useNavigate();
     const location = useLocation();
+    const [accountDetail, setAccountDetail] = useState({
+        id: '',
+        username: ''
+    });
     const [allBranch, setAllBranch] = useState([]);
     const [reservation, setReservation] = useState({
-        name: '',
-        phone: '',
         service: 'Haircut and Styling',
         branch_id: null,
         date: '',
         time: '',
-        dateandtime: '',
+        reservation_time: '',
     });
     const [branchInfo, setBranchInfo] = useState({name:'', open: '', close: '' });
-    const { id, full_name, phone, role } = location.state || {};
-
-    useEffect(() => {
-        if (location.state) {
-            setReservation(prevReservation => ({
-                ...prevReservation,
-                name: full_name || '', 
-                phone: phone || '',
-            }));
-        }
-        handleGetAllBranch();
-    }, [location.state]);
 
     useEffect(() => {
         if (allBranch.length > 0) {
@@ -39,19 +30,55 @@ function Reservation() {
                 ...prevReservation,
                 branch_id: defaultBranch.id
             }));
-            setBranchInfo({name: defaultBranch.name, open: defaultBranch.open_time, close: defaultBranch.close_time });
+            setBranchInfo({name: defaultBranch.name, open: defaultBranch.open_time, close: defaultBranch.closing_time });
         }
     }, [allBranch]);
+
+    useEffect(() => {
+        const token = localStorage.getItem("jwt");
+        if(!token){
+            navigate('/login')
+            return
+        }
+    
+        try{
+            const decode = jwtDecode(token)
+            const currentTime = Date.now() / 1000
+            if (decode.exp < currentTime) {
+                localStorage.removeItem("jwt");
+                toast.error("Session Expired", {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    transition: Bounce,
+                });
+    
+                setTimeout(() => {
+                    navigate('/login');
+                }, 1000);
+                return;
+            }
+            setAccountDetail({
+                id: decode.id,
+                username: decode.username,
+            });
+            handleGetAllBranch()
+        }
+        catch (error){
+            localStorage.removeItem("jwt")
+            navigate("/login")
+        }
+    }, []);
     
     function handleGetAllBranch() {
-        getAllBranch()
+        const token = localStorage.getItem("jwt")
+        getAllBranch(token)
         .then(data => {
-            if (data.length > 0) {
-                setReservation(prevReservation => ({
-                    ...prevReservation,
-                    branch_id: data[0].id
-                }));
-            }
             setAllBranch(data);
         })
         .catch(error =>{
@@ -60,7 +87,7 @@ function Reservation() {
     }
 
     function handleDashboard(){
-        navigate('/dashboard', { state: { id: id } });
+        navigate('/dashboard');
     }
 
     const handleAddReservation = () => {
@@ -75,7 +102,7 @@ function Reservation() {
         }
     
         const openTime = new Date(`${reservation.date}T${selectedBranch.open_time}`);
-        const closeTime = new Date(`${reservation.date}T${selectedBranch.close_time}`);
+        const closeTime = new Date(`${reservation.date}T${selectedBranch.closing_time}`);
         const adjustedCloseTime = new Date(closeTime.getTime() - 3600000);
     
         if (selectedDateTime < openTime || selectedDateTime > adjustedCloseTime) {
@@ -88,10 +115,10 @@ function Reservation() {
         if (formattedDateTime) {
             const updatedReservation = {
                 ...reservation,
-                dateandtime: formattedDateTime,
+                reservation_time: formattedDateTime,
             };
-            console.log(updatedReservation)
-            createReservation(updatedReservation)
+            const token = localStorage.getItem("jwt")
+            createReservation(token, updatedReservation)
                 .then(() => {
                     toast.success('Reservation Successfully Added', {
                         position: "top-center",
@@ -105,7 +132,7 @@ function Reservation() {
                         transition: Bounce,
                     });
                     setTimeout(() => {
-                        navigate('/dashboard', { state: { id } });
+                        navigate('/dashboard');
                     }, 1000)
                 })
                 .catch(error => {
@@ -131,14 +158,14 @@ function Reservation() {
         const { name, value } = e.target;
         const updatedReservation = {
             ...reservation,
-            [name]: name === 'branch_id' ? Number(value) : value,
+            [name]: value
         };
         setReservation(updatedReservation);
 
         if (name === 'branch_id') {
             const selectedBranch = allBranch.find(branch => branch.id === Number(value));
             if (selectedBranch) {
-                setBranchInfo({name: selectedBranch.name, open: selectedBranch.open_time, close: selectedBranch.close_time });
+                setBranchInfo({name: selectedBranch.name, open: selectedBranch.open_time, close: selectedBranch.closing_time });
             }
         }
     };
@@ -175,7 +202,7 @@ function Reservation() {
             <nav className='flex flex-row justify-around bg-slate-900'>
                 <h1 className='text-4xl py-4 text-white max-sm:text-2xl'>SEA Salon</h1>
                 <ul className='flex flex-row items-center'>
-                    <li className='mx-4 text-2xl text-white cursor-pointer max-sm:text-base max-sm:mx-1' onClick={handleDashboard}>{full_name}</li>
+                    <li className='mx-4 text-2xl text-white cursor-pointer max-sm:text-base max-sm:mx-1' onClick={handleDashboard}>{accountDetail.username}</li>
                 </ul>
             </nav>
             <main 

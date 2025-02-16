@@ -1,7 +1,10 @@
-export const createBranch = (newBranchInfo) => {
-    return fetch('https://api-rwvi7zgxda-uc.a.run.app/addBranch', {
+export const createBranch = (token, newBranchInfo) => {
+    return fetch('http://localhost:3000/branch/add', {
         method: 'POST',
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` 
+        },
         body: JSON.stringify(newBranchInfo)
     })
     .then(response => {
@@ -14,10 +17,13 @@ export const createBranch = (newBranchInfo) => {
     })
 }
 
-export const getAllBranch = () => {
-    return fetch('https://api-rwvi7zgxda-uc.a.run.app/allBranch', {
+export const getAllBranch = (token) => {
+    return fetch('http://localhost:3000/branch/all', {
         method: 'GET',
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
     })
     .then(response => {
         if(!response.ok){
@@ -29,10 +35,31 @@ export const getAllBranch = () => {
     })
 }
 
-export const editBranch = (id, branchInfo) => {
-    return fetch(`https://api-rwvi7zgxda-uc.a.run.app/editBranch/${id}`, {
+export const getBranchById = (token, id) => {
+    return fetch(`http://localhost:3000/branch/id/${id}`, {
+        method: 'GET',
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+    })
+    .then(response => {
+        if(!response.ok){
+            return response.json().then(error => {
+                throw new Error(error.error);
+            })
+        }
+        return response.json();
+    })
+}
+
+export const editBranch = (token, id, branchInfo) => {
+    return fetch(`http://localhost:3000/branch/edit/${id}`, {
         method: 'PUT',
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
         body: JSON.stringify(branchInfo)
     })
     .then(response => {
@@ -45,10 +72,13 @@ export const editBranch = (id, branchInfo) => {
     })
 }
 
-export const deleteBranch = (id) => {
-    return fetch(`https://api-rwvi7zgxda-uc.a.run.app/deleteBranch/${id}`, {
+export const deleteBranch = (token, id) => {
+    return fetch(`http://localhost:3000/branch/delete/${id}`, {
         method: 'DELETE',
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` 
+        },
     })
     .then(response => {
         if(!response.ok){

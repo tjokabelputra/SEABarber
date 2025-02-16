@@ -1,7 +1,10 @@
-export const createReservation = async (reservationInfo) => {
-    return fetch('https://api-rwvi7zgxda-uc.a.run.app/reserve', {
+export const createReservation = async (token, reservationInfo) => {
+    return fetch('http://localhost:3000/reservation/add', {
         method: 'POST',
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` 
+        },
         body: JSON.stringify(reservationInfo)
     })
     .then(response => {
@@ -14,10 +17,13 @@ export const createReservation = async (reservationInfo) => {
     })
 }
 
-export const getAllReservation = async() => {
-    return fetch('https://api-rwvi7zgxda-uc.a.run.app/allReservation', {
+export const getAllReservation = async(token) => {
+    return fetch('http://localhost:3000/reservation/all', {
         method: 'GET',
-        headers: { "Content-Type": "application/json"}
+        headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        }
     })
     .then(response => {
         if (!response.ok) {
@@ -29,10 +35,13 @@ export const getAllReservation = async() => {
     })
 }
 
-export const getReservationById = async (rid) => {
-    return fetch(`https://api-rwvi7zgxda-uc.a.run.app/reservation/${rid}`, {
+export const getReservationById = async (token, rid) => {
+    return fetch(`http://localhost:3000/reservation/id/${rid}`, {
         method: 'GET',
-        headers: { "Content-Type": "application/json" }
+        headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` 
+        }
     })
     .then(response => {
         if(!response.ok){
@@ -44,10 +53,13 @@ export const getReservationById = async (rid) => {
     })
 }
 
-export const getUserReservation = async(id) => {
-    return fetch(`https://api-rwvi7zgxda-uc.a.run.app/userReservation/${id}`, {
+export const getUserReservation = async(token) => {
+    return fetch('http://localhost:3000/reservation/user', {
         method: 'GET',
-        headers: { "Content-Type": "application/json" }
+        headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        }
     })
     .then(response => {
         if(!response.ok){
@@ -59,10 +71,13 @@ export const getUserReservation = async(id) => {
     })
 }
 
-export const updateReservation = async(rid, editedReservation) => {
-    return fetch(`https://api-rwvi7zgxda-uc.a.run.app/editReservation/${rid}`, {
+export const updateReservation = async(token, rid, editedReservation) => {
+    return fetch(`http://localhost:3000/reservation/edit/${rid}`, {
         method: 'PUT',
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` 
+        },
         body: JSON.stringify(editedReservation)
     })
     .then(response => {
@@ -75,10 +90,13 @@ export const updateReservation = async(rid, editedReservation) => {
     })
 }
 
-export const deleteReservation = async(rid) => {
-    return fetch(`https://api-rwvi7zgxda-uc.a.run.app/deleteReservation/${rid}`, {
+export const deleteReservation = async(token, rid) => {
+    return fetch(`http://localhost:3000/reservation/delete/${rid}`, {
         method: 'DELETE',
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` 
+        },
     })
     .then(response => {
         if(!response.ok){

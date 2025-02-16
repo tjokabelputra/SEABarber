@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { createAccount } from "../action/account.action";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ToastContainer, toast, Bounce } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -54,6 +54,13 @@ function Register(){
             });
         });
     }
+
+    useEffect(() => {
+        const token = localStorage.getItem("jwt")
+        if(token){
+            navigate('/dashboard')
+        }
+    })
 
     return (
         <div className="font-body">

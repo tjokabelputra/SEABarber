@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { loginEvent } from "../action/account.action";
 import { ToastContainer, toast, Bounce } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -35,7 +35,7 @@ function Login(){
                 transition: Bounce,
             });
             setTimeout(() => {
-                navigate('/dashboard', { state: { id: data.id } });
+                navigate('/dashboard');
             }, 1000);
         })
         .catch(error => {
@@ -52,6 +52,13 @@ function Login(){
             });
         });
     };
+
+    useEffect(() => {
+        const token = localStorage.getItem("jwt")
+        if(token){
+            navigate('/dashboard')
+        }
+    })
 
     return (
         <div className="font-body">

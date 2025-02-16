@@ -1,6 +1,14 @@
 const pool = require("../db/instance");
+const { validationResult } = require('express-validator')
 
 async function addReview(req, res){
+    const errors = validationResult(req)
+    
+    if(!errors.isEmpty()){
+        console.log(errors)
+        return res.status(422).json({ error: "Invalid Input, please check your data" })
+    }
+    
     const uid = req.userData.id
     const {comment, star} = req.body;
 
@@ -62,12 +70,12 @@ async function editReview(req, res){
 }
 
 async function deleteReview(req, res){
-    const { rid } = req.params;
+    const uid = req.userData.id
     
     try{
         const deletedReview = await pool.query(
-            `DELETE FROM reviews WHERE id = $1`,
-            [rid]
+            `DELETE FROM reviews WHERE user_id = $1`,
+            [uid]
         )
         if (deletedReview.rowCount == 0) {
             return res.status(404).json({ message: "No Review Found" });

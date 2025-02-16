@@ -1,29 +1,28 @@
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { createBranch } from '../action/branch.action';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ToastContainer, toast, Bounce } from 'react-toastify';
+import { jwtDecode } from 'jwt-decode';
 import 'react-toastify/dist/ReactToastify.css';
 
 function CreateBranch(){
     const navigate = useNavigate();
-    const location = useLocation();
     const [newBranch, setNewBranch] = useState({
         name: '',
         location: '',
         open_time: '',
-        close_time: ''
+        closing_time: ''
     })
-    const { user_id, full_name } = location.state || {};
 
     function handleBranchDashboard(){
-        navigate('/branchDashboard', { state: { user_id, full_name }});
+        navigate('/branchDashboard');
     }
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         let formattedValue = value;
 
-        if (name === 'open_time' || name === 'close_time') {
+        if (name === 'open_time' || name === 'closing_time') {
             formattedValue = `${value}:00`;
         }
 
@@ -33,8 +32,40 @@ function CreateBranch(){
         });
     };
 
+    useEffect(() => {
+        const token = localStorage.getItem("jwt")
+        try{
+            const decode = jwtDecode(token)
+            const currentTime = Date.now() / 1000
+            if (decode.exp < currentTime) {
+                localStorage.removeItem("jwt");
+                toast.error("Session Expired", {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    transition: Bounce,
+                });
+        
+                setTimeout(() => {
+                    navigate('/login');
+                }, 1000);
+                return;
+            }
+        }
+        catch (error){
+            localStorage.removeItem("jwt")
+            navigate("/login")
+        }
+    }, []);
+
     const handleCreateBranch = () => {
-        createBranch(newBranch)
+        const token = localStorage.getItem("jwt")
+        createBranch(token, newBranch)
         .then(() => {
             toast.success('Branch Successfully Created', {
                 position: "top-center",
@@ -48,7 +79,7 @@ function CreateBranch(){
                 transition: Bounce,
             });
             setTimeout(() => {
-            navigate('/branchDashboard', { state: { user_id, full_name }});
+            navigate('/branchDashboard');
             }, 1000)
         })
         .catch(error => {
@@ -120,12 +151,12 @@ function CreateBranch(){
                             onChange={handleChange}
                             className='w-2/5 px-2 py-2 border-2 border-black rounded-lg max-sm:px-1'
                         />
-                        <label htmlFor="close_time" className='text-xl ml-4 mr-4 max-sm:text-base max-sm:mr-2'>Close</label>
+                        <label htmlFor="closing_time" className='text-xl ml-4 mr-4 max-sm:text-base max-sm:mr-2'>Close</label>
                         <input 
                             type="time" 
-                            id="close_time" 
-                            name="close_time"
-                            value={newBranch.close_time}
+                            id="closing_time" 
+                            name="closing_time"
+                            value={newBranch.closing_time}
                             onChange={handleChange} 
                             className='w-2/5 px-2 py-2 border-2 border-black rounded-lg max-sm:px-1'
                         />

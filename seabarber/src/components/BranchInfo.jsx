@@ -1,27 +1,31 @@
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { getAllBranch } from '../action/branch.action';
 import { useState, useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
 
 function BranchInfo() {
     const navigate = useNavigate();
-    const location = useLocation();
+    const [accountDetail, setAccountDetail] = useState({
+        id: '',
+        role: ''
+    });
     const [allBranch, setAllBranch] = useState([]);
-    const { id, full_name, phone, role } = location.state || {};
 
     function handleHome() {
-        navigate('/', { state: { id, full_name, phone, role } });
+        navigate('/');
     }
 
     function handleReservation() {
-        if (id !== null) {
-            navigate('/reserve', { state: { id, full_name, phone, role } });
+        if (accountDetail.id !== null) {
+            navigate('/reserve');
         } else {
             navigate('/login');
         }
     }
 
     function handleBranchDetail() {
-        getAllBranch()
+        const token = localStorage.getItem("jwt")
+        getAllBranch(token)
             .then(data => {
                 setAllBranch(data);
             })
@@ -31,6 +35,42 @@ function BranchInfo() {
     }
 
     useEffect(() => {
+        const token = localStorage.getItem("jwt");
+        if(!token){
+            navigate('/login')
+            return
+        }        
+        try{
+            const decode = jwtDecode(token)
+            const currentTime = Date.now() / 1000
+            if (decode.exp < currentTime) {
+                localStorage.removeItem("jwt");
+                toast.error("Session Expired", {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    transition: Bounce,
+                });
+    
+                setTimeout(() => {
+                    navigate('/login');
+                }, 1000);
+                return;
+            }
+            setAccountDetail({
+                id: decode.id,
+                role: decode.role
+            });
+        }
+        catch (error){
+            localStorage.removeItem("jwt")
+            navigate("/login")
+        }
         handleBranchDetail();
     }, []);
 
@@ -40,7 +80,7 @@ function BranchInfo() {
                 <h1 className='text-4xl py-4 text-white max-sm:text-2xl'>SEA Salon</h1>
                 <ul className='flex flex-row items-center'>
                     <li className='mx-4 text-2xl text-white cursor-pointer max-sm:text-base max-sm:mx-1' onClick={handleHome}>Home</li>
-                    {role === 'Customer' &&
+                    {accountDetail.role === 'Customer' &&
                         <li className='mx-4 text-2xl text-white cursor-pointer max-sm:text-base max-sm:mx-1' onClick={handleReservation}>Reservation</li>
                     }
                 </ul>
@@ -55,7 +95,7 @@ function BranchInfo() {
                                 <p className='mb-2 text-2xl text-center max-sm:text-xl'>{branch.name}</p>
                                 <p className='mb-2 text-xl max-sm:text-sm'><i className='fas fa-map-marker-alt mr-2'></i>{branch.location}</p>
                                 <p className='mb-2 text-xl text-center max-sm:text-base'><i className='fas fa-door-open mr-2'></i>{branch.open_time}</p>
-                                <p className='text-xl text-center max-sm:text-base'><i className='fas fa-door-closed mr-2'></i>{branch.close_time}</p>
+                                <p className='text-xl text-center max-sm:text-base'><i className='fas fa-door-closed mr-2'></i>{branch.closing_time}</p>
                             </li>
                         ))}
                     </ul>

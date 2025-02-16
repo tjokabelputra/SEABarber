@@ -3,27 +3,67 @@ import { useState, useEffect } from "react";
 import { getReservationById, updateReservation } from "../action/reservation.action";
 import { getAllBranch } from "../action/branch.action";
 import { ToastContainer, toast, Bounce } from 'react-toastify';
+import { jwtDecode } from "jwt-decode";
 import 'react-toastify/dist/ReactToastify.css';
 
 function EditReservation() {
     const navigate = useNavigate();
     const location = useLocation();
+    const [accountDetail, setAccountDetail] = useState({
+        id: '',
+        username: ''
+    });
     const [allBranch, setAllBranch] = useState([]);
     const [reservation, setReservation] = useState({
-        name: '',
-        phone: '',
         service: 'Haircut and Styling',
-        branch_id: null,
+        branch_id: '',
         date: '',
         time: '',
         dateandtime: '',
     });
     const [branchInfo, setBranchInfo] = useState({name:'', open: '', close: '' });
-    const { id, r_id, full_name, role } = location.state || {};
+    const { r_id } = location.state || {};
 
     useEffect(() => {
-        handleGetAllBranch();
-        handleGetReservation();
+        const token = localStorage.getItem("jwt");
+        if(!token){
+            navigate('/login')
+            return
+        }
+            
+        try{
+            const decode = jwtDecode(token)
+            const currentTime = Date.now() / 1000
+            if (decode.exp < currentTime) {
+                localStorage.removeItem("jwt");
+                toast.error("Session Expired", {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    transition: Bounce,
+                });
+    
+                setTimeout(() => {
+                    navigate('/login');
+                }, 1000);
+                return;
+            }
+            setAccountDetail({
+                id: decode.id,
+                username: decode.username,
+            });
+            handleGetAllBranch()
+            handleGetReservation();
+        }
+        catch (error){
+            localStorage.removeItem("jwt")
+            navigate("/login")
+        }
     }, []);
 
     useEffect(() => {
@@ -33,16 +73,17 @@ function EditReservation() {
                 setBranchInfo({
                     name: selectedBranch.name,
                     open: selectedBranch.open_time,
-                    close: selectedBranch.close_time
+                    close: selectedBranch.closing_time
                 });
             }
         }
     }, [allBranch, reservation.branch_id]);
 
     function handleGetReservation() {
-        getReservationById(r_id)
+        const token = localStorage.getItem("jwt")
+        getReservationById(token, r_id)
             .then(data => {
-                const dateTime = new Date(data.dateandtime);
+                const dateTime = new Date(data.reservation_time);
                 const formattedDate = dateTime.toISOString().split('T')[0];
                 const formattedTime = dateTime.toTimeString().slice(0, 5);
 
@@ -58,7 +99,8 @@ function EditReservation() {
     }
     
     function handleGetAllBranch() {
-        getAllBranch()
+        const token = localStorage.getItem("jwt")
+        getAllBranch(token)
             .then(data => {
                 setAllBranch(data);
             })
@@ -68,7 +110,7 @@ function EditReservation() {
     }
 
     function handleDashboard() {
-        navigate('/dashboard', { state: { id: id } });
+        navigate('/dashboard');
     }
 
     const handleUpdateReservation = () => {
@@ -83,7 +125,7 @@ function EditReservation() {
         }
     
         const openTime = new Date(`${reservation.date}T${selectedBranch.open_time}`);
-        const closeTime = new Date(`${reservation.date}T${selectedBranch.close_time}`);
+        const closeTime = new Date(`${reservation.date}T${selectedBranch.closing_time}`);
         const adjustedCloseTime = new Date(closeTime.getTime() - 3600000);
     
         if (selectedDateTime < openTime || selectedDateTime > adjustedCloseTime) {
@@ -98,8 +140,10 @@ function EditReservation() {
                 ...reservation,
                 dateandtime: formattedDateTime,
             };
+
+            const token = localStorage.getItem("jwt")
             
-            updateReservation(r_id, updatedReservation)
+            updateReservation(token, r_id, updatedReservation)
                 .then(() => {
                     toast.success('Reservation Changed Successfully', {
                         position: "top-center",
@@ -113,7 +157,7 @@ function EditReservation() {
                         transition: Bounce,
                     });
                     setTimeout(() => {
-                        navigate('/reservationList', { state: { id, full_name, role } });
+                        navigate('/reservationList');
                     }, 1000);
                 })
                 .catch(error => {
@@ -139,7 +183,7 @@ function EditReservation() {
         const { name, value } = e.target;
         const updatedReservation = {
             ...reservation,
-            [name]: name === 'branch_id' ? Number(value) : value,
+            [name]: value,
         };
         setReservation(updatedReservation);
 
@@ -149,7 +193,7 @@ function EditReservation() {
                 setBranchInfo({
                     name: selectedBranch.name,
                     open: selectedBranch.open_time,
-                    close: selectedBranch.close_time
+                    close: selectedBranch.closing_time
                 });
             }
         }
@@ -187,7 +231,7 @@ function EditReservation() {
             <nav className='flex flex-row justify-around bg-slate-900'>
                 <h1 className='text-4xl py-4 text-white max-sm:text-2xl'>SEA Salon</h1>
                 <ul className='flex flex-row items-center'>
-                    <li className='mx-4 text-2xl text-white cursor-pointer max-sm:text-base max-sm:mx-1' onClick={handleDashboard}>{full_name}</li>
+                    <li className='mx-4 text-2xl text-white cursor-pointer max-sm:text-base max-sm:mx-1' onClick={handleDashboard}>{accountDetail.username}</li>
                 </ul>
             </nav>
             <main className="h-svh bg-slate-900 bg-center flex justify-center items-center">

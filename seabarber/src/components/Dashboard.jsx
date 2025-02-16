@@ -15,19 +15,19 @@ function Dashboard() {
     }
 
     function handleReserve(){
-        navigate('/reserve', { state: { id, full_name: accountDetail.full_name, phone: accountDetail.phone, role: accountDetail.role } });
+        navigate('/reserve');
     }
 
     function handleHome(){
-        navigate('/', { state: { id: id, full_name: accountDetail.full_name, phone: accountDetail.phone, role: accountDetail.role } });
+        navigate('/');
     }
 
     function handelReservationList(){
-        navigate('/reservationList', { state: { id: id, full_name: accountDetail.full_name, role: accountDetail.role}})
+        navigate('/reservationList')
     }
 
     function handleAdminReservationList(){
-        navigate('/reservationList', { state: { id: id, full_name: accountDetail.full_name, role: accountDetail.role}})
+        navigate('/reservationList')
     }
 
     function handleLogOut(){
@@ -75,6 +75,26 @@ function Dashboard() {
 
         try{
             const decode = jwtDecode(token)
+            const currentTime = Date.now() / 1000
+            if (decode.exp < currentTime) {
+                localStorage.removeItem("jwt");
+                toast.error("Session Expired", {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    transition: Bounce,
+                });
+    
+                setTimeout(() => {
+                    navigate('/login');
+                }, 1000);
+                return;
+            }
             setAccountDetail({
                 id: decode.id,
                 username: decode.username,

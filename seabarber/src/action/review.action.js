@@ -1,7 +1,10 @@
-export const createReview = async (reviewInfo) => {
-    return fetch('https://api-rwvi7zgxda-uc.a.run.app/review', {
+export const createReview = async (token, reviewInfo) => {
+    return fetch('http://localhost:3000/review/add', {
         method: 'POST',
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` 
+        },
         body: JSON.stringify(reviewInfo)
     })
     .then(response => {
@@ -14,10 +17,13 @@ export const createReview = async (reviewInfo) => {
     })
 }
 
-export const getReview = async (name) => {
-    return fetch(`https://api-rwvi7zgxda-uc.a.run.app/getReview/${name}`, {
+export const getReview = async (token) => {
+    return fetch(`http://localhost:3000/review/get`, {
         method: 'GET',
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
     })
     .then(response => {
         if (!response.ok) {
@@ -29,10 +35,13 @@ export const getReview = async (name) => {
     })
 }
 
-export const editReview = async (name, editReviewInfo) => {
-    return fetch(`https://api-rwvi7zgxda-uc.a.run.app/editReview/${name}`, {
+export const editReview = async (token, editReviewInfo) => {
+    return fetch(`http://localhost:3000/review/edit`, {
         method: 'PUT',
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}` 
+        },
         body: JSON.stringify(editReviewInfo)
     })
     .then(response => {
@@ -45,10 +54,13 @@ export const editReview = async (name, editReviewInfo) => {
     })
 }
 
-export const deleteReview = async (name) => {
-    return fetch(`https://api-rwvi7zgxda-uc.a.run.app/deleteReview/${name}`, {
+export const deleteReview = async (token) => {
+    return fetch('http://localhost:3000/review/delete', {
         method: 'DELETE',
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
     })
     .then(response => {
         if(!response.ok){

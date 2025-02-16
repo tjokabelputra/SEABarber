@@ -1,31 +1,32 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useState } from 'react';
-import { editBranch } from '../action/branch.action';
+import { useState, useEffect } from 'react';
+import { editBranch, getBranchById } from '../action/branch.action';
 import { ToastContainer, toast, Bounce } from 'react-toastify';
+import { jwtDecode } from 'jwt-decode';
 import 'react-toastify/dist/ReactToastify.css';
 
 function EditBranch() {
     const navigate = useNavigate();
     const loc = useLocation();
 
-    const { user_id, full_name, branch_id, name: initialName, location: initialLocation, open_time: initialOpenTime, close_time: initialCloseTime } = loc.state || {};
+    const { branch_id } = loc.state || {};
 
     const [branch, setBranch] = useState({
-        name: initialName || '',
-        location: initialLocation || '',
-        open_time: initialOpenTime || '',
-        close_time: initialCloseTime || ''
+        name: '',
+        location: '',
+        open_time: '',
+        closing_time: ''
     });
 
     const handleBranchDashboard = () => {
-        navigate('/branchDashboard', { state: { user_id, full_name }});
+        navigate('/branchDashboard');
     };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         let formattedValue = value;
 
-        if (name === 'open_time' || name === 'close_time') {
+        if (name === 'open_time' || name === 'closing_time') {
             formattedValue = `${value}:00`;
         }
 
@@ -36,7 +37,8 @@ function EditBranch() {
     };
 
     const handleEditBranch = () => {
-        editBranch(branch_id, branch)
+        const token = localStorage.getItem("jwt")
+        editBranch(token, branch_id, branch)
         .then(() =>{
             toast.success('Branch Successfully Edited', {
                 position: "top-center",
@@ -50,7 +52,7 @@ function EditBranch() {
                 transition: Bounce,
             });
             setTimeout(() => {
-            navigate('/branchDashboard', { state: { user_id, full_name }});
+            navigate('/branchDashboard');
             }, 1000)
         })
         .catch(error => {
@@ -67,6 +69,63 @@ function EditBranch() {
             });
         })
     };
+
+    const handleGetBranchInfo = () => {
+        const token = localStorage.getItem("jwt")
+        getBranchById(token, branch_id)
+            .then(data => {
+                setBranch({
+                    name: data.name,
+                    location: data.location,
+                    open_time: data.open_time,
+                    closing_time: data.closing_time
+                })
+            })
+            .catch(error => {
+                toast.error(error.message, {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    transition: Bounce,
+                });
+            })
+    }
+
+    useEffect(() => {
+        const token = localStorage.getItem("jwt")
+        try{
+            const decode = jwtDecode(token)
+            const currentTime = Date.now() / 1000
+            if (decode.exp < currentTime) {
+                localStorage.removeItem("jwt");
+                toast.error("Session Expired", {
+                    position: "top-center",
+                    autoClose: 3000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    transition: Bounce,
+                });        
+                setTimeout(() => {
+                    navigate('/login');
+                }, 1000);
+                return;
+            }
+            handleGetBranchInfo()
+        }
+        catch (error){
+            localStorage.removeItem("jwt")
+            navigate("/login")
+        }
+    }, []);
 
     return (
         <div className='font-body'>
@@ -122,12 +181,12 @@ function EditBranch() {
                             onChange={handleChange}
                             className='w-2/5 px-2 py-2 border-2 border-black rounded-lg max-sm:px-1'
                         />
-                        <label htmlFor="close_time" className='text-xl ml-2 mr-2 max-sm:text-base max-sm:mr-2'>Close</label>
+                        <label htmlFor="closing" className='text-xl ml-2 mr-2 max-sm:text-base max-sm:mr-2'>Close</label>
                         <input 
                             type="time" 
-                            id="close_time" 
-                            name="close_time"
-                            value={branch.close_time}
+                            id="closing" 
+                            name="closing"
+                            value={branch.closing_time}
                             onChange={handleChange}
                             className='w-2/5 px-2 py-2 border-2 border-black rounded-lg max-sm:px-1'
                         />
